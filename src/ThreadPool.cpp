@@ -7,18 +7,17 @@
 #include "ThreadPool.h"
 
 ThreadPool::ThreadPool(unsigned int size) {
-    size_ = size;
-    cur_size = size_;
+
     for (unsigned int i = 0; i < size; ++i) {
         workers_.emplace_back([this]() {
             while (true) {
                 std::function<void()> task;
-                {
+                { // 加锁竞争任务
                     std::unique_lock<std::mutex> lock(queue_mutex_);
                     // 任务队列不空 || 停止 则被唤醒
                     condition_variable_.wait(lock, [this]() { return stop_ || !tasks_.empty(); });
                     // 停止 && 没有任务 则返回
-                    if (stop_ && tasks_.empty()) {
+                    if (stop_) {
                         return;
                     }
                     task = tasks_.front(); // 取出任务
@@ -28,6 +27,9 @@ ThreadPool::ThreadPool(unsigned int size) {
             }
         });
     }
+
+    size_ = size;
+    cur_size = size_;
 }
 // 析构线程池的时候要等待所有任务汇合
 ThreadPool::~ThreadPool() {
@@ -41,4 +43,5 @@ ThreadPool::~ThreadPool() {
             th.join();
         }
     }
+    printf("Destroy ThreadPool.\n");
 }

@@ -21,10 +21,10 @@ Server::Server() : main_reactor_(nullptr), acceptor_(nullptr), thread_pool_(null
     acceptor_->SetNewConnectionCallback(cb);
 
     // 创建线程池
-    int size = static_cast<int>(std::thread::hardware_concurrency());
-    thread_pool_ = new ThreadPool(size);
-    for (int i = 0; i < size; ++i) { // 每一个线程对应一个从reactor
-        EventLoop* loop = new EventLoop(i+1);
+    size_t tp_size = static_cast<int>(std::thread::hardware_concurrency());
+    thread_pool_ = new ThreadPool(tp_size);
+    for (int i = 0; i < tp_size; ++i) { // 每一个线程对应一个从reactor
+        auto* loop = new EventLoop(i+1);
         sub_reactors_.push_back(loop);
         std::function<void()> sub_loop = [capture0 = sub_reactors_[i]] { capture0->Loop(); };
         thread_pool_->Add(std::move(sub_loop));
@@ -32,25 +32,22 @@ Server::Server() : main_reactor_(nullptr), acceptor_(nullptr), thread_pool_(null
 }
 // 析构服务器是一件很麻烦的事情，必须有逻辑的进行
 Server::~Server() {
-    // 等待停止 主reactor，停止分发任务
-    main_reactor_->StopLoop();
-    delete main_reactor_; main_reactor_ = nullptr;
-    // 等待停止各个 从reactor，停止接收任务
-    for (EventLoop* sub_reactor : sub_reactors_) {
-        sub_reactor->StopLoop();
-        delete sub_reactor; sub_reactor = nullptr;
-    }
-    delete acceptor_; acceptor_ = nullptr;
-    delete thread_pool_; thread_pool_ = nullptr;
-    printf("close connection num: %d ...\n", int(connections_.size()));
-    for (auto it = connections_.begin(); it != connections_.end(); ++it) {
-        delete it->second;
-    }
-    connections_.clear();
-
-//    if (monitor_.joinable()) {
-//        monitor_.join();
+//    // 等待停止 主reactor，停止分发任务
+//    main_reactor_->StopLoopWaite();
+//    delete main_reactor_; main_reactor_ = nullptr;
+//    // 等待停止各个 从reactor，停止接收任务
+//    for (auto it = sub_reactors_.begin(); it != sub_reactors_.end(); ++it) {
+//        (*it)->StopLoopWaite();
+//        delete (*it);
+//        it = sub_reactors_.erase(it);
 //    }
+//    delete acceptor_; acceptor_ = nullptr;
+//    delete thread_pool_; thread_pool_ = nullptr;
+//    printf("close connection num: %d ...\n", int(connections_.size()));
+//    for (auto & connection : connections_) {
+//        delete connection.second;
+//    }
+//    connections_.clear();
 }
 
 // 这个函数需要由主reactor的连接建立部分调用，用来分配任务到线程池，、
@@ -92,4 +89,24 @@ void Server::WriteConnect(std::function<void(Connection*)> fn) { write_connect_c
 
 void Server::Run() {
     main_reactor_->Loop();
+}
+
+void Server::Stop() {
+    // 等待停止 主reactor，停止分发任务
+    std::cout << "sadasd";
+    main_reactor_->StopLoopWaite();
+    delete main_reactor_; main_reactor_ = nullptr;
+    // 等待停止各个 从reactor，停止接收任务
+    for (auto it = sub_reactors_.begin(); it != sub_reactors_.end(); ++it) {
+        (*it)->StopLoopWaite();
+        delete (*it);
+        it = sub_reactors_.erase(it);
+    }
+    delete acceptor_; acceptor_ = nullptr;
+    delete thread_pool_; thread_pool_ = nullptr;
+    printf("close connection num: %d ...\n", int(connections_.size()));
+    for (auto & connection : connections_) {
+        delete connection.second;
+    }
+    connections_.clear();
 }

@@ -30,16 +30,16 @@ Epoll::~Epoll() {
     delete[] events_;
 }
 
-std::vector<Channel *> Epoll::Poll(int timeout) {
+std::vector<Channel *> Epoll::Poll(int timeout) const {
     std::vector<Channel* > active_channels;
-    int nfds = epoll_wait(epfd_, events_, MAX_EVENTS, timeout);
+    int fds = epoll_wait(epfd_, events_, MAX_EVENTS, timeout);
     if (errno == EINTR) {
         // 如果系统调用被信号中断，重新等待事件
         return {};
     } else {
-        ErrorIf(nfds == -1, "epoll wait error");
+        ErrorIf(fds == -1, "epoll wait error");
     }
-    for (int i = 0; i < nfds; ++i) {
+    for (int i = 0; i < fds; ++i) {
         Channel* ch;
         ch = (Channel *) events_[i].data.ptr;
         ch->SetReadyEvents(events_[i].events);
@@ -48,7 +48,7 @@ std::vector<Channel *> Epoll::Poll(int timeout) {
     return active_channels;
 }
 
-void Epoll::UpdateChannel(Channel *ch) { // epoll_ctl 并且将channel与该event绑定
+void Epoll::UpdateChannel(Channel *ch) const { // epoll_ctl 并且将channel与该event绑定
     int fd = ch->GetFd();
     struct epoll_event ev {};
     ev.data.ptr = ch;
@@ -61,7 +61,7 @@ void Epoll::UpdateChannel(Channel *ch) { // epoll_ctl 并且将channel与该even
     }
 }
 
-void Epoll::DeleteChannel(Channel *ch) {
+void Epoll::DeleteChannel(Channel *ch) const {
     int fd = ch->GetFd();
     if (ch->GetInEpoll() && fd >= 0) {
         ErrorIf(epoll_ctl(epfd_, EPOLL_CTL_DEL, fd, nullptr) == -1, "epoll delete error");

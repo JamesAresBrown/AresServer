@@ -46,7 +46,7 @@ int Socket::Bind(InetAddress *addr) const {
 
 int Socket::Listen() const {
 //    ErrorIf(::listen(fd_, SOMAXCONN) == -1, "socket listen error");
-    return ::listen(fd_, SOMAXCONN);
+    return listen(fd_, SOMAXCONN);
 }
 void Socket::SetNonBlocking() const {
     fcntl(fd_, F_SETFL, fcntl(fd_, F_GETFL) | O_NONBLOCK);
@@ -55,7 +55,9 @@ void Socket::SetReuseadder() const {
     int iSockOptVal = 1;
     setsockopt(fd_, SOL_SOCKET, SO_REUSEADDR, &iSockOptVal, sizeof(iSockOptVal));
 }
-bool Socket::IsNonBlocking() const { return (fcntl(fd_, F_GETFL) & O_NONBLOCK) != 0; }
+bool Socket::IsNonBlocking() const {
+    return (fcntl(fd_, F_GETFL) & O_NONBLOCK) != 0;
+}
 int Socket::Accept(InetAddress *addr) const {
   // for server socket
   int clnt_sockfd;

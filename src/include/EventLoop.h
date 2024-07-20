@@ -10,7 +10,6 @@
 
 #include <functional>
 #include <mutex>
-#include <condition_variable>
 class Epoll;
 class Channel;
 class EventLoop {
@@ -25,16 +24,17 @@ public:
 
 
     void Loop();
-    void StopLoop();
-    void UpdateChannel(Channel *ch);
-    void DeleteChannel(Channel *ch);
+    void StopLoopWaite();
+    void UpdateChannel(Channel *ch) const;
+//    void DeleteChannel(Channel *ch) const;
     
     // private:
     int id_ = -1;
-    std::condition_variable quit_done_condition_;
     std::mutex mutex_;
     Epoll* epoll_{nullptr};
     bool quit_{false};
+    std::chrono::time_point<std::chrono::system_clock> last_active_timestamp_;
+    const unsigned int MAX_SEC;
 };
 
 #endif //MYSERVER_EVENTLOOP_H

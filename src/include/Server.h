@@ -55,6 +55,7 @@ public:
         return thread_pool_->GetWorkingThreadCount();
     }
     void Run();
+    void Stop();
 };
 
 #endif //MYSERVER_SERVER_H

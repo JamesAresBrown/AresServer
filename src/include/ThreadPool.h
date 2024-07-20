@@ -47,8 +47,8 @@ public:
     auto Add(SStatus sStatus, F &&f, Args &&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
 
 private:
-    int size_ = 1;
-    int cur_size = 1;
+    unsigned int size_ = 1;
+    unsigned int cur_size = 1;
     std::vector<std::thread> workers_;
     std::queue<std::function<void()>> tasks_;
     std::mutex queue_mutex_;
@@ -58,6 +58,8 @@ private:
 
 // 不能放在cpp文件，C++编译器不支持模版的分离编译
 // 高度抽象任务
+// Add只负责把任务放在task队列中，放在队列中的任务是一个个EventLoop，
+// 每一个EventLoop负责一个客户端连接，线程池中的线程会自由竞争task
 template <class F, class... Args>
 auto ThreadPool::Add(F &&f, Args &&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
     using return_type = typename std::result_of<F(Args...)>::type;

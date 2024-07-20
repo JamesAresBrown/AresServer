@@ -21,10 +21,10 @@ public:
     Epoll& operator=(Epoll&&) = delete; /* NOLINT */
 
 
-    void UpdateChannel(Channel *ch);
-    void DeleteChannel(Channel *ch);
+    void UpdateChannel(Channel *ch) const;
+    void DeleteChannel(Channel *ch) const;
 
-    std::vector<Channel *> Poll(int timeout = -1);
+    std::vector<Channel *> Poll(int timeout = -1) const;
 
 public:
     int epfd_{1};

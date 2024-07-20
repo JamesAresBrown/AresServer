@@ -29,10 +29,10 @@ public:
     //  void Read2Write();
     //  void Write2Read();
     
-    int GetFd() const;
-    uint32_t GetListenEvents() const;
+    [[nodiscard]] int GetFd() const;
+    [[nodiscard]] uint32_t GetListenEvents() const;
 //    uint32_t GetReadyEvents() const;
-    bool GetInEpoll() const;
+    [[nodiscard]] bool GetInEpoll() const;
     void SetInEpoll(bool in = true);
     void UseET();
     void ResetListenEvents(uint32_t ev);
@@ -48,10 +48,7 @@ public:
     uint32_t ready_events_;
     bool in_epoll_;
     std::chrono::time_point<std::chrono::system_clock> recent_active_;
-    
-//    std::function<void()> read_callback_ = [&](){
-//        std::cout << fd_ << "no read logic" << std::endl;
-//    };
+
       std::function<void()> read_callback_ = nullptr;
         std::function<void()> write_callback_ = [](){
         std::cout << "no write logic" << std::endl;

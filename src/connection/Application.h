@@ -9,10 +9,8 @@
 
 class Application {
 public:
-    Application() {
-    }
-    virtual ~Application() {
-    }
+    Application() = default;
+    virtual ~Application() = default;
     virtual bool Read() = 0;
     virtual bool Process() = 0;
     virtual bool Write() = 0;

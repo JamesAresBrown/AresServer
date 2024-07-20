@@ -16,7 +16,6 @@
 #include "CacheClient.h"
 
 bool should_exit = false;
-std::mutex mutex_;
 
 void signal_handler(int signal) {
     std::cout << "接收到信号 " << signal << "，正在退出程序..." << std::endl;
@@ -31,13 +30,13 @@ int main(int argc, char* argv[]) {
 
     // 配置系统
     std::map<std::string, std::string> config_map = loadConfig(argv[1]);
-    string SERVER_ROOT_PATH = toString(config_map.at("SERVER.SERVER_ROOT_PATH"));
-    string SERVER_DATA_PATH = toString(config_map.at("SERVER.SERVER_DATA_PATH"));
-    string SERVER_MYSQL_URL = toString(config_map.at("SERVER.SERVER_MYSQL_URL"));
-    string SERVER_MYSQL_USER = toString(config_map.at("SERVER.SERVER_MYSQL_USER"));
-    string SERVER_MYSQL_PASSWORD = toString(config_map.at("SERVER.SERVER_MYSQL_PASSWORD"));
-    string SERVER_MYSQL_DATABASENAME = toString(config_map.at("SERVER.SERVER_MYSQL_DATABASENAME"));
-    int SERVER_MYSQL_PORT = toInt(config_map.at("SERVER.SERVER_MYSQL_PORT"));
+    string SERVER_ROOT_PATH = toString(config_map.at("SERVER.ROOT_PATH"));
+    string SERVER_DATA_PATH = toString(config_map.at("SERVER.DATA_PATH"));
+    string SERVER_MYSQL_URL = toString(config_map.at("MYSQL.URL"));
+    string SERVER_MYSQL_USER = toString(config_map.at("MYSQL.USER"));
+    string SERVER_MYSQL_PASSWORD = toString(config_map.at("MYSQL.PASSWORD"));
+    string SERVER_MYSQL_DATABASENAME = toString(config_map.at("MYSQL.DATABASENAME"));
+    int SERVER_MYSQL_PORT = toInt(config_map.at("MYSQL.PORT"));
 
 
     signal(SIGINT, signal_handler); // Ctrl+C
@@ -63,7 +62,7 @@ int main(int argc, char* argv[]) {
     server->ReadConnect([&](Connection *conn) {
         // 这是个非常恶心的臭虫，初始化操作不可以放在读取中，不然没当读一次，绑定的应用对象就被重新创建一次
         if (nullptr == conn->application_) {
-            HttpMVS* http = new HttpMVS();
+            auto* http = new HttpMVS();
             conn->application_ = http;
             // 采用虚函数 以下是一些自定义的初始化操作
             http->Init(const_cast<char *>(SERVER_ROOT_PATH.c_str()), const_cast<char *>(SERVER_DATA_PATH.c_str()), conn->GetChannel());
@@ -89,35 +88,22 @@ int main(int argc, char* argv[]) {
         }
     });
 
-//    std::thread([&](){
-//        while (true) {
-//            std::this_thread::sleep_for(std::chrono::seconds{1});
-//            {
-//                std::unique_lock<std::mutex> lock(mutex_);
-//                if (should_exit) {
-////                    loop->quit_ = true;
-//                    delete server;
-//                    server = nullptr;
-////                    delete loop;
-//                    exit(1);
-//                    break;
-//                }
-//            }
-//
-//        }
-//    }).detach();
-
-//    server->Run();
-    std::thread([&](){
+    auto t = std::thread([&](){
         while (true) {
+            this_thread::sleep_for(2s);
             if (should_exit) {
+                server->Stop();
                 delete server;
-                exit(0);
+                server = nullptr;
+                return;
             }
         }
-    }).detach();
+    });
 
     server->Run();
+
+    t.join();
+
 
 //    server = nullptr;
 //    delete mysqlPool;

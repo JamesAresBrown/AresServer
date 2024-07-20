@@ -6,6 +6,7 @@
  */
 #include "Channel.h"
 #include <sys/epoll.h>
+#include <armadillo>
 #include "EventLoop.h"
 
 Channel::Channel(EventLoop *loop, int fd)
@@ -14,10 +15,10 @@ Channel::Channel(EventLoop *loop, int fd)
 Channel::~Channel() {
     // 成员变量loop_并不由Channel管理
     // 这个fd_和绑定的socket是一样的，通过socket关闭
-//    if (fd_ != -1) {
-//        close(fd_);
-//        fd_ = -1;
-//    }
+    if (fd_ != -1) {
+        close(fd_);
+        fd_ = -1;
+    }
 }
 
 void Channel::HandleEvent() {
@@ -33,15 +34,15 @@ void Channel::HandleEvent() {
 
 void Channel::EnableRead() { // 加入到epoll监听红黑树中
     listen_events_ |= EPOLLIN | EPOLLPRI;
-    loop_->UpdateChannel(this); // eventloop维护epoll对象，所以加入事件由eventloop负责
+    loop_->UpdateChannel(this); // EventLoop维护epoll对象，所以加入事件由EventLoop负责
 }
 //void Channel::Read2Write() { // 加入到epoll监听红黑树中
 //    listen_events_ = EPOLLOUT| EPOLLRDHUP;
-//    loop_->UpdateChannel(this); // eventloop维护epoll对象，所以加入事件由eventloop负责
+//    loop_->UpdateChannel(this); // EventLoop维护epoll对象，所以加入事件由EventLoop负责
 //}
 //void Channel::Write2Read() { // 加入到epoll监听红黑树中
 //    listen_events_ = EPOLLIN | EPOLLPRI;
-//    loop_->UpdateChannel(this); // eventloop维护epoll对象，所以加入事件由eventloop负责
+//    loop_->UpdateChannel(this); // EventLoop维护epoll对象，所以加入事件由EventLoop负责
 //}
 
 void Channel::UseET() {
