@@ -4,7 +4,7 @@
 echo "脚本进程ID: $$"
 
 # 定义可执行文件路径
-EXECUTABLE_PATH="/home/ares/Workspace/AresServer/cmake-build-debug-ubuntu_aresserver/Server14"
+EXECUTABLE_PATH="/tmp/data/AresServer/cmake-build-debug-ubuntu_aresserver/Server14"
 CONFIG_PATH="/tmp/data/config.ini"
 LOAD_FILE_PATH="/tmp/data/material/"
 RES_FILE_PATH="/tmp/data/result/"

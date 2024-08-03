@@ -6,29 +6,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # 如果需要兼容 C 语言，则添加以下选项
 enable_language(C)
-# 为动态库添加源文件
-# 设置动态库的名称
-set(LIB_NAME MyLibrary14)
 
-# 获取 src 目录下的所有 .cpp 文件
-#file(GLOB LIB_SOURCES "src/*.cpp")
-file(GLOB_RECURSE LIB_SOURCES "src/*.cpp" "src/**/*.cpp")
-
+# 创建动态库
 include_directories(
         src/connection
         src/include
         src/process/include
         src/cache
 )
+file(GLOB_RECURSE LIB_SOURCES "src/*.cpp" "src/**/*.cpp")
+add_library(MyLibrary14 SHARED ${LIB_SOURCES})
 
-# 创建动态库
-add_library(${LIB_NAME} SHARED ${LIB_SOURCES})
-
-set(EXTERNAL_LIBS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/process/external_libs")
+link_directories(
+        /usr/local/lib/ # redis相关库文件地址
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/process/external_libs
+)
 set(EXTERNAL_LIBS
-        ${EXTERNAL_LIBS_PATH}/libdpmvs5.so
-        ${EXTERNAL_LIBS_PATH}/libredis++.so.1
-        ${EXTERNAL_LIBS_PATH}/libhiredis.so.1.1.0
+        libdpmvs5.so
+        libredis++.so
+        libhiredis.so
         -lhiredis
         -lredis++
         -pthread
@@ -44,7 +40,5 @@ add_executable(Server14 server.cpp)
 # 添加链接库
 target_link_libraries(Server14 PRIVATE
         MyLibrary14
-        -pthread
-        -lmysqlclient
         ${EXTERNAL_LIBS}
 )

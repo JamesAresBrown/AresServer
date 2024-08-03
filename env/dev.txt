@@ -1,2 +1,0 @@
-sudo apt-get install mysql-server mysql-client
-sudo apt install libpcl-dev libvtk6-dev libnlopt-dev libopencv-dev libmysqlclient-dev
