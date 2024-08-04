@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>SLAM Lab</title>
-
     <style>
         /* 设置包含 Three.js 渲染器的容器居中 */
         #pointCloudContainer {
@@ -12,25 +11,43 @@
             left: 50%;
             /*transform: translate(-50%, -50%);*/
         }
+        /* 将图片宽度设置为父元素宽度的80% */
+        img {
+            max-width: 600px;
+            height: auto; /* 保持原始宽高比 */
+            display: block; /* 确保图片居中显示 */
+            margin: 0 auto;
+        }
+        body {
+            margin: 0;
+        }
+        /* 底部样式 */
+        footer {
+            background-color: #f2f2f2;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+        footer a {
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 14px; /* 固定字体大小 */
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        #pointCloudCanvas {
+            background-color: #f0f0f0; /* 设置背景色为浅灰色 */
+            padding: 20px; /* 可选：添加一些填充 */
+        }
     </style>
-
-
-
 </head>
-<!--<body style="background-color: #0F142D;">-->
 <body style="background-color: #ffffff;">
-
-<style>
-    /* 将图片宽度设置为父元素宽度的80% */
-    img {
-        max-width: 600px;
-        height: auto; /* 保持原始宽高比 */
-        display: block; /* 确保图片居中显示 */
-        margin: 0 auto;
-    }
-</style>
 <img src="./head.jpg" title="awsl" alt="Image">
-<img src="./tutorial.gif" title="awsl" alt="Image">
+<!--<img src="./tutorial.gif" title="awsl" alt="Image">-->
 
 <div id="login" style="text-align: center;">
     <form action="2" method="post">
@@ -57,10 +74,8 @@
     </form>
 </div>
 
-
 <div id="process" style="text-align: center;">
     <p id="usernameDisplay">User: No User</p>
-<!--    <h2>上传 ZIP 压缩包</h2>-->
     <input type="file" id="fileInput" class="process" accept=".zip" onchange="handleFileChange()" disabled>
     <button type="button" id="uploadButton" class="process" onclick="uploadFile()" disabled>上传</button>
     <button type="button" id="processButton" class="process" onclick="processFile()" disabled>处理</button>
@@ -70,69 +85,19 @@
 </div>
 
 <div id="pointsShow" style="text-align: center;">
-    <style>
-        #pointCloudCanvas {
-            background-color: #f0f0f0; /* 设置背景色为浅灰色 */
-            padding: 20px; /* 可选：添加一些填充 */
-        }
-    </style>
     <canvas id="pointCloudCanvas" width="500" height="300"></canvas>
 </div>
 
-<!--<style>-->
-<!--    #pointCloudContainer {-->
-<!--        width: 500px; /* 设置容器宽度 */-->
-<!--        height: 300px; /* 设置容器高度 */-->
-<!--        position: absolute; /* 将容器定位为绝对位置 */-->
-<!--        top: 50%; /* 将容器的顶部置于父容器的50%位置 */-->
-<!--        left: 50%; /* 将容器的左侧置于父容器的50%位置 */-->
-<!--        transform: translate(-50%, -50%); /* 使用 transform 属性将容器居中 */-->
-<!--        border: 1px solid black; /* 可选：添加边框 */-->
-<!--    }-->
-<!--</style>-->
-<!--<div id="pointCloudContainer" style="text-align: center;"></div>-->
-
-
 <footer>
-    <style>
-        body {
-            margin: 0;
-        }
-
-        /* 底部样式 */
-        footer {
-            background-color: #f2f2f2; /* 背景色 */
-            padding: 20px; /* 内边距 */
-            text-align: center; /* 文本居中 */
-        }
-
-        footer p {
-            margin: 10px 0; /* 上下边距 */
-            color: #333; /* 文本颜色 */
-        }
-
-        footer a {
-            color: #0066cc; /* 链接颜色 */
-            text-decoration: none; /* 去掉下划线 */
-        }
-
-        footer a:hover {
-            text-decoration: underline; /* 鼠标悬浮时添加下划线 */
-        }
-    </style>
-<!--    <p>© 2024 示例网站 版权所有 <a href="http://www.beian.miit.gov.cn/" target="_blank">陕ICP备2024032918号-1</a></p>-->
     <a href="https://beian.miit.gov.cn/" target="_blank">陕ICP备2024032918号-1</a>
 </footer>
 
 <script>
     var fileContent = '';
-</script>
-<script>
-
     var name = '';
     var pw = '';
-
     var token = '';
+
     function addToken(xhr) {
         if (token !== '')
             xhr.setRequestHeader('Authorization', token);
@@ -148,6 +113,7 @@
             element.style.pointerEvents = "auto";
         }
     }
+
     function setVisibleDisableClass(className, disable) {
         const elements = document.getElementsByClassName(className);
         for (let i = 0; i < elements.length; i++) {
@@ -226,12 +192,14 @@
         var params = 'user=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password);
         xhr.send(params);
     }
+
     // 去注册逻辑
     function toRegister() {
         setVisibleDisableClass("register", false);
         setVisibleDisable("toRegisterButton", true);
         setDisableClass("process", true);
     }
+
     // 注册逻辑
     function register() {
         const username = document.querySelector('input[name="registerUser"]').value;
@@ -262,7 +230,6 @@
         xhr.send(params);
     }
 
-
     // 选择文件逻辑
     function handleFileChange(event) {
         const file = event.target.files[0];
@@ -274,183 +241,115 @@
         document.getElementById('processButton').disabled = true;
         document.getElementById('downloadButton').disabled = true;
     }
-    // 上传按钮逻辑
+
+    // 上传文件逻辑
     function uploadFile() {
-        setDisableClass("process", true);
-
         const fileInput = document.getElementById('fileInput');
-        let file = fileInput.files[0];
+        const file = fileInput.files[0];
+        const reader = new FileReader();
 
-        if (!file) {
-            alert('请选择要上传的文件！');
-            return;
-        }
+        reader.onload = function(event) {
+            const fileContent = event.target.result;
 
-        const formData = new FormData();
-        formData.append('fileSize', file.size.toString());
-        formData.append('file', file);
-        // formData.append(file.size.toString(), file);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/4', true);
+            xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+            addToken(xhr);
 
-
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/7', true);
-        addToken(xhr);
-
-        xhr.onload = function() {
-            setDisableClass("process", false);
-            document.getElementById('downloadButton').disabled = true;
-            if (xhr.status === 200) {
-                if (xhr.responseText === 'upload_right') {
-                    alert('上传成功，点击处理，等待处理成功响应后，点击下载结果文件。');
-                    file = null;
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert('文件上传成功！');
+                    document.getElementById('processButton').disabled = false;
+                    document.getElementById('downloadButton').disabled = true;
                 } else {
-                    alert('注册失败！');
+                    alert('文件上传失败：' + xhr.statusText);
                 }
-            } else {
-                if (403 === xhr.status) {
-                    alert(xhr.status + ' : ' + xhr.responseText + '\n 连接失败，请重新连接。');
-                    logout()
-                } else {
-                    alert(xhr.status + ' : ' + xhr.responseText);
-                }
-            }
+            };
 
-            const fileInput = document.getElementById('fileInput');
-            fileInput.value = "";  // 清空文件输入框
-
-            const fileNameDisplay = document.getElementById('fileNameDisplay');
-            fileNameDisplay.textContent = "未选择文件";  // 重置文件名显示
+            xhr.send(fileContent);
         };
 
-        xhr.send(formData);
+        reader.readAsArrayBuffer(file);
     }
-    // 处理按键逻辑
+
+    // 处理文件逻辑
     function processFile() {
-        fileContent = '';
-        setDisableClass("process", true);
-
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '/9', true);
+        xhr.open('POST', '/5', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
         addToken(xhr);
 
         xhr.onload = function() {
-            setDisableClass("process", false);
             if (xhr.status === 200) {
-                alert('处理成功，点击下载。');
+                alert('文件处理成功！');
                 document.getElementById('downloadButton').disabled = false;
-                // 解析服务器返回的文件并下载
-                fileContent = xhr.responseText;
-                displayPLYFileContent2(fileContent);
             } else {
-                if (403 === xhr.status) {
-                    alert(xhr.status + ' : ' + xhr.responseText + '\n 连接失败，请重新连接。');
-                    logout()
-                } else {
-                    alert(xhr.status + ' : ' + xhr.responseText + '\n 检查上传的数据是否有误，如果数据有误请重新上传。或者试试重新处理。');
-                }
+                alert('文件处理失败：' + xhr.statusText);
             }
         };
 
-        xhr.send();
+        xhr.send(JSON.stringify({ action: 'process' }));
     }
+
     // 下载文件逻辑
     function downloadFile() {
-        if (fileContent !== '') {
-            const blob = new Blob([fileContent], {type: 'application/octet-stream'});
-            const url = URL.createObjectURL(blob);
-
-            const downloadLink = document.createElement('a');
-            downloadLink.href = url;
-            downloadLink.download = 'res.ply';
-            downloadLink.style.display = 'none';
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-        }
-    }
-    // 注销按键逻辑
-    function logout() {
-        setDisableClass("process", true);
-        setDisableClass("login", false);
-        setVisibleDisableClass("register", true);
-        document.getElementById("nameContent").value = '';
-        document.getElementById("passwordContent").value = '';
-        document.getElementById("registerNameContent").value = '';
-        document.getElementById("registerPasswordContent").value = '';
-    }
-
-    // 解析PLY文件内容并绘制到Canvas上
-    function displayPLYFileContent2(fileContent) {
-        const lines = fileContent.trim().split('\n');
-        const canvas = document.getElementById('pointCloudCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // 清空Canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 解析顶点数据
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (line === "end_header") {
-                // 顶点数据开始于"end_header"行之后
-                for (let j = i + 1; j < lines.length; j++) {
-                    const vertexData = lines[j].trim().split(' ');
-                    const x = parseFloat(vertexData[0]);
-                    const y = parseFloat(vertexData[1]);
-                    const z = parseFloat(vertexData[2]);
-                    const r = parseInt(vertexData[6]);
-                    const g = parseInt(vertexData[7]);
-                    const b = parseInt(vertexData[8]);
-
-                    // 假设这里绘制一个半径为1的点
-                    ctx.fillStyle = `rgb(${r},${g},${b})`;
-                    ctx.beginPath();
-                    ctx.arc(x * 50 + canvas.width / 2, y * 50 + canvas.height / 2, 1, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
-                break;
-            }
-        }
-    }
-
-    function getExample() {
-        // 创建 XMLHttpRequest 对象
-        var xhr = new XMLHttpRequest();
-
-        // 设置请求类型和地址
-        xhr.open('POST', './ET.zip', true);
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/6', true);
+        xhr.responseType = 'blob';
         addToken(xhr);
 
-        // 设置响应类型
-        xhr.responseType = 'blob';
-        // let fileContent = '';
         xhr.onload = function() {
             if (xhr.status === 200) {
-                alert('下载成功');
-
-                var blob = xhr.response;
-                var downloadLink = document.createElement('a');
-                downloadLink.href = window.URL.createObjectURL(blob);
-                downloadLink.download = 'ET.zip';
-                downloadLink.style.display = 'none';
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
+                const blob = xhr.response;
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'processed_file.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                alert('文件下载成功！');
             } else {
-                // 处理错误
-                alert('下载失败，请重试！');
+                alert('文件下载失败：' + xhr.statusText);
             }
-        };
-
-        xhr.onerror = function() {
-            // 处理错误
-            alert('下载失败，请重试！');
         };
 
         xhr.send();
     }
 
-</script>
+    // 注销逻辑
+    function logout() {
+        setDisableClass("login", false);
+        setDisableClass("process", true);
+        setVisibleDisableClass("register", true);
+    }
 
+    // 下载测试用例
+    function getExample() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/example', true);
+        xhr.responseType = 'blob';
+        addToken(xhr);
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const blob = xhr.response;
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'example.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } else {
+                alert('下载测试用例失败：' + xhr.statusText);
+            }
+        };
+
+        xhr.send();
+    }
+</script>
 </body>
 </html>
