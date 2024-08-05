@@ -6,7 +6,7 @@
 
 # 使用
 
-![](https://github.com/JamesAresBrown/AresServer/blob/main/root/tutorial.gif)
+![](./root/tutorial.gif)
 
 # 使用Docker
 
