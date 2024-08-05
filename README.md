@@ -1,4 +1,9 @@
 # AresServer
+
+# 系统架构
+
+![](./root/AresServer_framework.jpg)
+
 # 使用
 
 ![](https://github.com/JamesAresBrown/AresServer/blob/main/root/tutorial.gif)
